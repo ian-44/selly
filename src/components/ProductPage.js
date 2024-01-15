@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
 import '../App.css'
 import StarRatingComponent from "./StarRatingComponent";
+import { useSearchParams } from "react-router-dom";
 
 // Inside ProductPage.js
 const ProductPage = () => {
     const [products, setProducts] = useState([]);
     const [isGrid, setIsGrid] = useState(true);
+    const [lookUp, setLookUp] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [categorySearchTerm, setCategorySearchTerm] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [filteredCategoryProducts, setFilteredCategoryProducts] = useState([]);
+    const [searchParams] = useSearchParams();
   
     useEffect(() => {
       fetch('https://fakestoreapi.com/products')
@@ -15,15 +20,36 @@ const ProductPage = () => {
         .then((data) => {
           setProducts(data);
           setFilteredProducts(data);
-          console.log('%cDebug jjjjjjjjjjjjjj :: ', 'background: #222; color: #bada55', data);
+          setFilteredCategoryProducts(data);
+
+          if(searchParams.get('category')) {
+            setLookUp(true);
+            setCategorySearchTerm(searchParams.get('category'));
+          }
         });
     }, []);
+
+    useEffect(() => {
+      if(lookUp && categorySearchTerm) {
+        handleCategorySearch()
+        setLookUp(false)
+      }
+    }, [lookUp, categorySearchTerm])
   
     const handleSearch = () => {
       const filtered = products.filter((product) =>
         product.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredProducts(filtered);
+      setFilteredCategoryProducts(filtered);
+      setCategorySearchTerm('')
+    };
+
+    const handleCategorySearch = () => {
+      const filteredCategories = filteredProducts.filter((product) =>
+        product.category.toLowerCase().includes(categorySearchTerm.toLowerCase())
+      );
+      setFilteredCategoryProducts(filteredCategories);
     };
 
     const onProductClick = (i) => {
@@ -40,13 +66,23 @@ const ProductPage = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <button onClick={handleSearch}>Search</button>
+
+        <input
+          style={{ marginLeft: '10px' }}
+          type="text"
+          placeholder="Search categories"
+          value={categorySearchTerm}
+          onChange={(e) => setCategorySearchTerm(e.target.value)}
+        />
+        <button onClick={handleCategorySearch}>Search</button>
+
         <div style={{ justifyContent: 'flex-end', width: '100%', display: 'flex', }}><span onClick={()=>setIsGrid(false)}>List</span>&nbsp;|&nbsp;<span onClick={()=>setIsGrid(true)}>Grid</span></div>
           {
             isGrid ?
             (
               <div className="product-grid" >
                 {
-                  filteredProducts.map((prod, i) => (
+                  filteredCategoryProducts.map((prod, i) => (
                     <div className="product-card" key={i} onClick={() => onProductClick(prod.id)}>
                       <img className="product-image" src={prod.image} alt={prod.title}/>
                       <h4 className="product-category">{prod.category}</h4>
@@ -60,7 +96,7 @@ const ProductPage = () => {
             ) : (
               <div className="product-list" >
                 {
-                  filteredProducts.map((prod, i) => (
+                  filteredCategoryProducts.map((prod, i) => (
                     <div className="product-list-item" key={i} onClick={() => onProductClick(prod.id)}>
                       <div><img className="product-list-image" src={prod.image} alt={prod.title}/></div>
                       <div>
@@ -80,4 +116,3 @@ const ProductPage = () => {
   };
   
   export default ProductPage;
-  

@@ -27,8 +27,8 @@ const HomePage = () => {
       setFilteredProducts(filtered);
     };
 
-    const onProductClick = (i) => {
-
+    const handleCategory = (category) => {
+        window.location = `/product/?category=${category}`
     }
 
   
@@ -46,7 +46,7 @@ const HomePage = () => {
                 <img src={'/images/tv.png'} style={{ width: 'clamp(200px, 340px, 50%)', height: 'clamp(200px, 250px, 50%)' }}/>
             </div>
             <div className="hero-grid">
-                <div class="hero-grid-item">
+                <div className="hero-grid-item" onClick={() => handleCategory('men\'s clothing')}>
                     <h3 >Men's Clothing</h3>
                     <div className="hero-grid-item-grid">
                         {
@@ -56,7 +56,7 @@ const HomePage = () => {
                         }
                     </div>
                 </div>
-                <div class="hero-grid-item">
+                <div className="hero-grid-item" onClick={() => handleCategory('women\'s clothing')}>
                     <h3 >Women's Clothing</h3>
                     <div className="hero-grid-item-grid">
                         {
@@ -66,7 +66,7 @@ const HomePage = () => {
                         }
                     </div>
                 </div>
-                <div class="hero-grid-item">
+                <div className="hero-grid-item" onClick={() => handleCategory('jewelery')}>
                     <h3 >Jewellery</h3>
                     <div className="hero-grid-item-grid">
                         {
@@ -76,7 +76,7 @@ const HomePage = () => {
                         }
                     </div>
                 </div>
-                <div class="hero-grid-item">
+                <div className="hero-grid-item" onClick={() => handleCategory('electronics')}>
                     <h3 >Electronics</h3>
                     <div className="hero-grid-item-grid">
                         {
@@ -95,4 +95,3 @@ const HomePage = () => {
   };
   
   export default HomePage;
-  
